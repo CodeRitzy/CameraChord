@@ -104,9 +104,10 @@ class ChordPlayer:
         self.channel.play(self.sound_cache[triad], loops=-1, fade_ms=100)
 
     def stop(self) -> None:
-        if self.channel.get_busy():
-            self.channel.fadeout(150)
+        if self.current_triad is None:
+            return
 
+        self.channel.fadeout(150)
         self.current_triad = None
 
     def close(self) -> None:

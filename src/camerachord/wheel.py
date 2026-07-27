@@ -66,5 +66,89 @@ def draw_chord_wheel(
 
         label_angle = math.radians(angle_degrees + segment_size / 2)
         label_radius = (inner_radius + outer_radius) // 2
+        label_x = int(
+            center_x + label_radius * math.cos(label_angle)
+        )
+        label_y = int(
+            center_y + label_radius * math.sin(label_angle)
+        )
 
-       
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 0.8
+        text_thickness = 2
+
+        text_size, _ = cv2.getTextSize(
+            chord,
+            font,
+            font_scale,
+            text_thickness,
+        )
+
+        text_width, text_height = text_size
+
+        text_x = label_x - text_width // 2
+        text_y = label_y + text_height // 2
+
+        # Dark outline keeps the chord readable over the camera.
+        cv2.putText(
+            frame,
+            chord,
+            (text_x, text_y),
+            font,
+            font_scale,
+            (0, 0, 0),
+            5,
+        )
+
+        cv2.putText(
+            frame,
+            chord,
+            (text_x, text_y),
+            font,
+            font_scale,
+            color,
+            text_thickness,
+        )
+    if selected_segment is not None:
+        selected_chord = chords[selected_segment]
+
+        center_font = cv2.FONT_HERSHEY_SIMPLEX
+        center_scale = 1.6
+        center_thickness = 3
+
+        center_size, _ = cv2.getTextSize(
+            selected_chord,
+            center_font,
+            center_scale,
+            center_thickness,
+        )
+
+        center_text_width, center_text_height = center_size
+
+        center_text_x = center_x - center_text_width // 2
+        center_text_y = center_y + center_text_height // 2
+
+        cv2.putText(
+            frame,
+            selected_chord,
+            (center_text_x, center_text_y),
+            center_font,
+            center_scale,
+            (0, 0, 0),
+            7,
+        )
+
+        cv2.putText(
+            frame,
+            selected_chord,
+            (center_text_x, center_text_y),
+            center_font,
+            center_scale,
+            (0, 255, 0),
+            center_thickness,
+        )
+
+
+        
+
+        
