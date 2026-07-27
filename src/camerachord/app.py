@@ -3,7 +3,7 @@ import cv2
 from camerachord.hands import HandTracker
 from camerachord.camera import open_camera
 from camerachord.music import Mode, Root, get_chords_in_key
-from camerachord.wheel import get_segment_from_point
+from camerachord.wheel import draw_chord_wheel, get_segment_from_point
 
 def main() -> None:
     tracker = HandTracker()
@@ -29,14 +29,17 @@ def main() -> None:
 
             center_x = width // 2
             center_y = height // 2
-            inner_radius = 80
-            outer_radius = 220
+            max_wheel_radius = min(width, height) // 3
+            
+            outer_radius = max_wheel_radius
+            inner_radius = outer_radius // 3
             segment_count = len(chords)
 
             
             index_tip = tracker.find_index_fingertip(frame)
-            
+
             selected_segment = None
+
             if index_tip is not None:
                 point_x, point_y = index_tip
 
@@ -50,30 +53,31 @@ def main() -> None:
                     segment_count,
                 )
 
+                cv2.circle(frame, index_tip, 8, (0, 255, 0), -1)
+
             if selected_segment is not None:
                 selected_chord = chords[selected_segment]
             else:
                 selected_chord = None
+
+            draw_chord_wheel(
+                frame,
+                center_x,
+                center_y,
+                inner_radius,
+                outer_radius,
+                chords,
+                selected_segment,
+            )
             cv2.putText(
                 frame,
-                f"Key: {selected_root.display_name} {selected_mode.display_name}",
-                (20, 40),
+                f"Selected: {selected_chord}",
+                (20, 80),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 1,
-                (255, 255, 255),
+                (0, 255, 0),
                 2,
             )
-
-            if selected_chord is not None:
-                cv2.putText(
-                    frame,
-                    f"Selected: {selected_chord}",
-                    (20, 80),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1,
-                    (0, 255, 0),
-                    2,
-                )
 
             cv2.imshow("CameraChord", frame)
 
