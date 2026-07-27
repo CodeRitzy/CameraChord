@@ -95,3 +95,7 @@ def get_chords_in_key(root: Root, mode: Mode) -> list[str]:
     for triad in triads:
         chords.append(get_chord_name(triad[0], triad[1], triad[2]))
     return chords
+
+def get_triads_in_key(root: Root, mode: Mode) -> list[tuple[Root, Root, Root]]:
+    scale = build_scale(root, mode)
+    return build_triads(scale)

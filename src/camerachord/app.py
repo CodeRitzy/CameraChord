@@ -1,16 +1,20 @@
 import cv2
 
-from camerachord.hands import HandTracker
+from camerachord.audio import ChordPlayer
 from camerachord.camera import open_camera
-from camerachord.music import Mode, Root, get_chords_in_key
+from camerachord.hands import HandTracker
+from camerachord.music import Mode, Root, get_chords_in_key, get_triads_in_key
 from camerachord.wheel import draw_chord_wheel, get_segment_from_point
 
 def main() -> None:
     tracker = HandTracker()
     camera = open_camera()
+    player = ChordPlayer()
+
     selected_root = Root.D
     selected_mode = Mode.MAJOR
     chords = get_chords_in_key(selected_root, selected_mode)
+    triads = get_triads_in_key(selected_root, selected_mode)
 
     print(f"Selected key: {selected_root.display_name} {selected_mode.display_name}")
     print(f"Chords: {chords}")
@@ -60,6 +64,11 @@ def main() -> None:
             else:
                 selected_chord = None
 
+            if selected_segment is not None:
+                player.play_chord(triads[selected_segment])
+            else:
+                player.stop()
+
             draw_chord_wheel(
                 frame,
                 center_x,
@@ -90,6 +99,7 @@ def main() -> None:
                 break
 
     finally:
+        player.close()
         tracker.close()
         camera.release()
         cv2.destroyAllWindows()
